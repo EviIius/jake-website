@@ -1,18 +1,6 @@
 import type { ProjectEntry } from "../types/content";
 import { getLinkToneClass, inferChipTone, sortChipLabels } from "./pillTones";
 import { renderInlineEmphasis } from "./renderInlineEmphasis";
-import {
-  DomesIcon,
-  GeneticIcon,
-  IdolIcon,
-  JaggerScriptIcon,
-  JolorIcon,
-  JordleIcon,
-  MaterializeIcon,
-  RengineIcon,
-  TsxLightIcon,
-  TypingEffectIcon
-} from "../features/games/GameIcons";
 
 type ProjectCardProps = {
   project: ProjectEntry;
@@ -39,31 +27,24 @@ function ProjectCard({ project, id }: ProjectCardProps) {
     );
   }
 
-  function renderProjectIcon() {
-    switch (project.icon) {
-      case "domes":
-        return <DomesIcon />;
-      case "jordle":
-        return <JordleIcon />;
-      case "jolor":
-        return <JolorIcon />;
-      case "genetic":
-        return <GeneticIcon />;
-      case "jaggerscript":
-        return <JaggerScriptIcon />;
-      case "materialize":
-        return <MaterializeIcon />;
-      case "tsxlight":
-        return <TsxLightIcon />;
-      case "rengine":
-        return <RengineIcon />;
-      case "typing-effect":
-        return <TypingEffectIcon />;
-      case "idol":
-        return <IdolIcon />;
-      default:
-        return null;
-    }
+  function renderProjectVisual() {
+    return (
+      <div className="project-card__data-visual" aria-hidden="true">
+        <span className="project-card__data-route project-card__data-route--one" />
+        <span className="project-card__data-route project-card__data-route--two" />
+        <span className="project-card__data-route project-card__data-route--three" />
+        <span className="project-card__data-node project-card__data-node--one" />
+        <span className="project-card__data-node project-card__data-node--two" />
+        <span className="project-card__data-node project-card__data-node--three" />
+        <span className="project-card__data-node project-card__data-node--four" />
+        <div className="project-card__data-stack">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -71,8 +52,8 @@ function ProjectCard({ project, id }: ProjectCardProps) {
       {project.image ? (
         <img src={project.image} alt={`${project.title} preview`} className="project-card__image" />
       ) : (
-        <div className={`project-card__image project-card__image--icon project-card__image--${project.icon ?? "default"}`} aria-hidden="true">
-          <div className="project-card__icon-wrap">{renderProjectIcon()}</div>
+        <div className="project-card__image project-card__image--visual" aria-hidden="true">
+          {renderProjectVisual()}
         </div>
       )}
       <div className="project-card__content">

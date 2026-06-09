@@ -19,23 +19,23 @@ describe("HomePage", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: /Jagger Brulato/i })
+      screen.getByRole("heading", { name: /Jake Brulato/i })
     ).toBeInTheDocument();
     expect(screen.getByTestId("scene-backdrop")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: /These projects fill in the rest of the picture/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /^JaggerScript$/i })
+      screen.getByRole("heading", { name: /^Banking Signal Dashboard$/i })
     ).toBeInTheDocument();
     expect(
       screen
-        .getAllByRole("link", { name: /Open Demo/i })
-        .some((link) => link.getAttribute("href") === "/rengine")
+        .getAllByRole("link", { name: /Contact/i })
+        .some((link) => link.getAttribute("href") === "/#contact")
     ).toBe(true);
     expect(
-      screen.getAllByRole("link", { name: /Resume/i })[0]
-    ).toHaveAttribute("href", "/files/resume.pdf");
+      screen.getByRole("img", { name: /City analytics signal map/i })
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /Go to|Return to top/i })
     ).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/#experience/red-ventures-platform-engineer"]}>
+      <MemoryRouter initialEntries={["/#experience/banking-analytics-data-scientist-analyst"]}>
         <HomePage />
       </MemoryRouter>
     );
@@ -103,7 +103,7 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/#projects/jaggerscript"]}>
+      <MemoryRouter initialEntries={["/#projects/banking-signal-dashboard"]}>
         <HomePage />
       </MemoryRouter>
     );
@@ -159,7 +159,7 @@ describe("HomePage", () => {
     );
 
     scrollTo.mockClear();
-    fireEvent.click(screen.getByRole("link", { name: /Jagger Brulato/i }));
+    fireEvent.click(screen.getByRole("link", { name: /Jake Brulato/i }));
 
     expect(scrollTo).toHaveBeenCalledWith({
       top: 0,

@@ -3,12 +3,21 @@ import { useState } from "react";
 import SiteNavigation from "../../components/SiteNavigation";
 import { profileContent } from "../../content/profile";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
-import CircuitBoardScene from "./CircuitBoardScene";
 import CityMapScene from "./CityMapScene";
+
+const conceptOptions = [
+  {
+    id: "city-map",
+    label: "City map",
+    className: "concept-pane--city",
+    Scene: CityMapScene
+  }
+];
 
 function ConceptComparePage() {
   const [activeSectionId, setActiveSectionId] = useState(profileContent.sceneSections[0].id);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const isSingleConcept = conceptOptions.length === 1;
   const activeSection =
     profileContent.sceneSections.find((section) => section.id === activeSectionId) ??
     profileContent.sceneSections[0];
@@ -27,8 +36,8 @@ function ConceptComparePage() {
       <main className="concept-shell">
         <section className="concept-header">
           <div>
-            <span className="concept-header__eyebrow">Concepts</span>
-            <h1>City map vs. circuit board</h1>
+            <span className="concept-header__eyebrow">Portfolio world concept</span>
+            <h1>City map, but sharper</h1>
           </div>
 
           <div className="concept-controls" aria-label="Compare section">
@@ -49,38 +58,27 @@ function ConceptComparePage() {
           </div>
         </section>
 
-        <section className="concept-grid" aria-label="Portfolio scene concepts">
-          <article className="concept-pane concept-pane--city" aria-label="City map concept">
-            <div className="concept-pane__canvas">
-              <Canvas camera={{ position: [-1, 1.8, 14], fov: 42 }} dpr={[1, 1.35]}>
-                <CityMapScene
-                  sections={profileContent.sceneSections}
-                  activeSectionId={activeSectionId}
-                  reducedMotion={prefersReducedMotion}
-                />
-              </Canvas>
-            </div>
-            <div className="concept-pane__meta">
-              <span>City map</span>
-              <strong>{activeSection.label}</strong>
-            </div>
-          </article>
-
-          <article className="concept-pane concept-pane--circuit" aria-label="Circuit board concept">
-            <div className="concept-pane__canvas">
-              <Canvas camera={{ position: [-1, 1.8, 14], fov: 42 }} dpr={[1, 1.35]}>
-                <CircuitBoardScene
-                  sections={profileContent.sceneSections}
-                  activeSectionId={activeSectionId}
-                  reducedMotion={prefersReducedMotion}
-                />
-              </Canvas>
-            </div>
-            <div className="concept-pane__meta">
-              <span>Circuit board</span>
-              <strong>{activeSection.label}</strong>
-            </div>
-          </article>
+        <section
+          className={isSingleConcept ? "concept-grid concept-grid--single" : "concept-grid"}
+          aria-label="Portfolio scene concepts"
+        >
+          {conceptOptions.map(({ id, label, className, Scene }) => (
+            <article key={id} className={`concept-pane ${className}`} aria-label={`${label} concept`}>
+              <div className="concept-pane__canvas">
+                <Canvas camera={{ position: [-1, 1.8, 14], fov: 42 }} dpr={[1, 1.25]}>
+                  <Scene
+                    sections={profileContent.sceneSections}
+                    activeSectionId={activeSectionId}
+                    reducedMotion={prefersReducedMotion}
+                  />
+                </Canvas>
+              </div>
+              <div className="concept-pane__meta">
+                <span>{label}</span>
+                <strong>{activeSection.label}</strong>
+              </div>
+            </article>
+          ))}
         </section>
       </main>
     </div>

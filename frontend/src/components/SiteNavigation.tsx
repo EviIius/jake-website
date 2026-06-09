@@ -18,13 +18,24 @@ function sectionHref(pathname: string, sectionId: string) {
   return pathname === "/" ? `#${sectionId}` : `/#${sectionId}`;
 }
 
+function getBrandInitials(name: string) {
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("");
+
+  return initials || "JB";
+}
+
 function SiteNavigation({
   sections = [],
   navLinks,
   activeSectionId,
   onSectionNavigate,
-  brandTitle = "Jagger Brulato",
-  brandSubtitle = "sr. full-stack engineer",
+  brandTitle = "Jake Brulato",
+  brandSubtitle = "data scientist & analyst",
   brandHref = "/",
   showActions = true
 }: SiteNavigationProps) {
@@ -109,7 +120,7 @@ function SiteNavigation({
       >
         <div className="site-nav__topbar">
           <Link to={brandHref} className="site-nav__brand-link" onClick={handleBrandClick}>
-            <span className="site-nav__brand-mark">JB</span>
+            <span className="site-nav__brand-mark">{getBrandInitials(brandTitle)}</span>
             <span>
               <strong>{brandTitle}</strong>
               <small>{brandSubtitle}</small>
@@ -167,16 +178,13 @@ function SiteNavigation({
             <div className="site-nav__actions">
               <a
                 className="site-nav__button site-nav__button--ghost"
-                href="/files/resume.pdf"
+                href="/#contact"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Resume
+                Contact
               </a>
-              <Link className="site-nav__button" to="/games" onClick={() => setIsMenuOpen(false)}>
-                Go to Games
-              </Link>
-              <Link className="site-nav__button" to="/jaggerscript" onClick={() => setIsMenuOpen(false)}>
-                Go to JaggerScript
+              <Link className="site-nav__button" to="/concepts" onClick={() => setIsMenuOpen(false)}>
+                City Concept
               </Link>
             </div>
           ) : null}

@@ -30,6 +30,7 @@ const GROUND_Y = -2.36;
 const ROAD_Y = GROUND_Y + 0.045;
 const TRACE_Y = GROUND_Y + 0.09;
 const RUNNER_Y = GROUND_Y + 0.2;
+const SKYLINE_Y = GROUND_Y + 0.24;
 
 const cityColors = {
   background: "#06100d",
@@ -143,6 +144,17 @@ function buildDistrictLoop(center: THREE.Vector3) {
 
 function buildRunnerRoute(from: THREE.Vector3, to: THREE.Vector3) {
   return getRoutePoints(from, to, RUNNER_Y);
+}
+
+function getElevatedSignalPoints(from: THREE.Vector3, to: THREE.Vector3, y: number, lift: number) {
+  const route = getRoutePoints(from, to, y);
+  const middleIndex = Math.floor(route.length / 2);
+
+  return route.map((point, index) => {
+    const distanceFromMiddle = Math.abs(index - middleIndex);
+    const arcLift = lift * (1 - distanceFromMiddle / Math.max(middleIndex, 1));
+    return new THREE.Vector3(point.x, point.y + arcLift, point.z);
+  });
 }
 
 function generateBuildings(sectionIndex: number) {
@@ -313,6 +325,112 @@ function MainTransitNetwork({ cityPositions }: { cityPositions: THREE.Vector3[] 
   );
 }
 
+function DataTrafficLayer({
+  cityPositions,
+  reducedMotion
+}: {
+  cityPositions: THREE.Vector3[];
+  reducedMotion: boolean;
+}) {
+  const packetRefs = useRef<Array<THREE.Mesh | null>>([]);
+  const packetSpecs = useMemo(
+    () =>
+      cityPositions.slice(0, -1).flatMap((position, index) => {
+        const routePoints = getRoutePoints(position, cityPositions[index + 1], TRACE_Y + 0.075);
+        const routeLength = getPolylineLength(routePoints);
+        const color =
+          index % 3 === 0
+            ? cityColors.teal
+            : index % 3 === 1
+              ? cityColors.amber
+              : cityColors.coral;
+
+        return [0, 0.5].map((offset) => ({
+          color,
+          offset: routeLength * offset,
+          routeLength,
+          routePoints,
+          speed: 0.72 + index * 0.04
+        }));
+      }),
+    [cityPositions]
+  );
+
+  useFrame((state) => {
+    if (reducedMotion) {
+      return;
+    }
+
+    packetRefs.current.forEach((packet, index) => {
+      const spec = packetSpecs[index];
+      if (!packet || !spec) {
+        return;
+      }
+
+      const sample = samplePolyline(
+        spec.routePoints,
+        state.clock.elapsedTime * spec.speed + spec.offset,
+        true
+      );
+      packet.position.copy(sample.position);
+      packet.scale.setScalar(0.82 + Math.sin(state.clock.elapsedTime * 5 + index) * 0.08);
+    });
+  });
+
+  return (
+    <group>
+      {packetSpecs.map((spec, index) => (
+        <mesh
+          key={index}
+          ref={(node) => {
+            packetRefs.current[index] = node;
+          }}
+        >
+          <sphereGeometry args={[0.07, 16, 16]} />
+          <meshBasicMaterial color={spec.color} transparent opacity={0.88} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function ElevatedSignalLayer({ cityPositions }: { cityPositions: THREE.Vector3[] }) {
+  const ribbons = useMemo(
+    () =>
+      cityPositions.slice(0, -1).map((position, index) => ({
+        color:
+          index % 3 === 0
+            ? cityColors.mint
+            : index % 3 === 1
+              ? cityColors.amber
+              : cityColors.magenta,
+        points: getElevatedSignalPoints(
+          position,
+          cityPositions[index + 1],
+          SKYLINE_Y + 0.52 + (index % 2) * 0.16,
+          0.72 + (index % 3) * 0.12
+        )
+      })),
+    [cityPositions]
+  );
+
+  return (
+    <group>
+      {ribbons.map((ribbon, index) => (
+        <group key={index}>
+          <Line points={ribbon.points} color={ribbon.color} lineWidth={1.6} transparent opacity={0.34} />
+          {ribbon.points.slice(1, -1).map((point, pointIndex) => (
+            <mesh key={pointIndex} position={point}>
+              <sphereGeometry args={[0.045, 12, 12]} />
+              <meshBasicMaterial color={ribbon.color} transparent opacity={0.46} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+    </group>
+  );
+}
+
 function CircuitTraceLayer({ cityPositions }: { cityPositions: THREE.Vector3[] }) {
   const traces = useMemo(
     () =>
@@ -364,6 +482,7 @@ function DistrictNode({
 }) {
   const buildings = useMemo(() => generateBuildings(sectionIndex), [sectionIndex]);
   const pulseRef = useRef<THREE.Mesh>(null);
+  const sweepRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
   const accent = section.accent;
 
@@ -387,6 +506,14 @@ function DistrictNode({
           : 0.075;
       }
     }
+
+    if (sweepRef.current) {
+      sweepRef.current.rotation.y = state.clock.elapsedTime * 0.36 + sectionIndex * 0.2;
+      const material = sweepRef.current.material;
+      if (material instanceof THREE.MeshBasicMaterial) {
+        material.opacity = active ? 0.32 + Math.sin(state.clock.elapsedTime * 3 + sectionIndex) * 0.06 : 0;
+      }
+    }
   });
 
   return (
@@ -406,6 +533,11 @@ function DistrictNode({
       <mesh ref={pulseRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.085, 0]}>
         <ringGeometry args={[1.35, 1.48, 96]} />
         <meshBasicMaterial color={accent} side={THREE.DoubleSide} transparent opacity={0.1} />
+      </mesh>
+
+      <mesh ref={sweepRef} position={[0, 0.42, 0]}>
+        <boxGeometry args={[2.8, 0.025, 0.045]} />
+        <meshBasicMaterial color={accent} transparent opacity={0} depthWrite={false} />
       </mesh>
 
       <mesh position={[0, 0.13, 0]}>
@@ -443,20 +575,28 @@ function DistrictNode({
       {buildings.map((building, index) => {
         const activeHeight = active ? building.height * 1.14 : building.height * 0.9;
         return (
-          <mesh
+          <group
             key={index}
             position={[building.x, activeHeight / 2 + 0.05, building.z]}
             rotation={[0, ((index % 3) - 1) * 0.06, 0]}
           >
-            <boxGeometry args={[building.width, activeHeight, building.depth]} />
-            <meshStandardMaterial
-              color={active ? building.color : cityColors.mutedGlass}
-              emissive={active ? accent : "#06100d"}
-              emissiveIntensity={active ? 0.1 : 0.015}
-              roughness={0.78}
-              metalness={0.08}
-            />
-          </mesh>
+            <mesh>
+              <boxGeometry args={[building.width, activeHeight, building.depth]} />
+              <meshStandardMaterial
+                color={active ? building.color : cityColors.mutedGlass}
+                emissive={active ? accent : "#06100d"}
+                emissiveIntensity={active ? 0.1 : 0.015}
+                roughness={0.78}
+                metalness={0.08}
+              />
+            </mesh>
+            {active && index % 3 === 0 ? (
+              <mesh position={[0, activeHeight / 2 + 0.012, 0]}>
+                <boxGeometry args={[building.width * 0.82, 0.025, building.depth * 0.82]} />
+                <meshBasicMaterial color={accent} transparent opacity={0.58} />
+              </mesh>
+            ) : null}
+          </group>
         );
       })}
     </group>
@@ -576,6 +716,21 @@ function DistantSkyline() {
   );
 }
 
+function HarborGlow() {
+  return (
+    <group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[8.6, GROUND_Y + 0.028, 4.8]}>
+        <circleGeometry args={[2.8, 64]} />
+        <meshBasicMaterial color={cityColors.teal} transparent opacity={0.065} depthWrite={false} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-7.8, GROUND_Y + 0.03, -5.6]}>
+        <circleGeometry args={[2.2, 64]} />
+        <meshBasicMaterial color={cityColors.amber} transparent opacity={0.05} depthWrite={false} />
+      </mesh>
+    </group>
+  );
+}
+
 function CityCameraRig({
   sections,
   cityPositions,
@@ -629,9 +784,12 @@ function CityMapScene({ sections, activeSectionId, reducedMotion }: CityMapScene
       <pointLight position={[1, 5, -7]} intensity={0.86} color={cityColors.coral} />
 
       <CityGround />
+      <HarborGlow />
       <CityStreetGrid />
       <MainTransitNetwork cityPositions={cityPositions} />
       <CircuitTraceLayer cityPositions={cityPositions} />
+      <ElevatedSignalLayer cityPositions={cityPositions} />
+      <DataTrafficLayer cityPositions={cityPositions} reducedMotion={reducedMotion} />
       <DistantSkyline />
 
       {sections.map((section, index) => (

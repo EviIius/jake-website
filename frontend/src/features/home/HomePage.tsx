@@ -6,7 +6,7 @@ import { renderInlineEmphasis } from "../../components/renderInlineEmphasis";
 import SectionShell from "../../components/SectionShell";
 import SiteNavigation from "../../components/SiteNavigation";
 import SkillClusterCard from "../../components/SkillClusterCard";
-import { profileContent, headshotAsset } from "../../content/profile";
+import { profileContent } from "../../content/profile";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
 import { useSectionSpy } from "../../hooks/useSectionSpy";
@@ -204,36 +204,38 @@ function HomePage() {
           </div>
 
           <div className="hero-panel__aside">
-            <div className="hero-panel__portrait-wrap">
-              <img src={headshotAsset} alt="Jagger Brulato portrait" className="hero-panel__portrait" />
+            <div className="hero-panel__portrait-wrap hero-panel__portrait-wrap--data">
+              <div className="hero-panel__data-portrait" role="img" aria-label="City analytics signal map">
+                <span className="data-portrait__route data-portrait__route--a" />
+                <span className="data-portrait__route data-portrait__route--b" />
+                <span className="data-portrait__route data-portrait__route--c" />
+                <span className="data-portrait__node data-portrait__node--one" />
+                <span className="data-portrait__node data-portrait__node--two" />
+                <span className="data-portrait__node data-portrait__node--three" />
+                <span className="data-portrait__node data-portrait__node--four" />
+                <div className="data-portrait__panel data-portrait__panel--score">
+                  <span>Risk Signal</span>
+                  <strong>+18%</strong>
+                </div>
+                <div className="data-portrait__panel data-portrait__panel--trend">
+                  <span>Portfolio Flow</span>
+                  <strong>Stable</strong>
+                </div>
+                <div className="data-portrait__bars" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </div>
             </div>
             <div className="metric-grid">
               {profileContent.metrics.map((metric) => (
-                metric.label === "Favorite Project" ? (
-                  <a key={metric.label} className="metric-card metric-card--interactive" href="/jaggerscript">
-                    <span>{metric.label}</span>
-                    <strong className="metric-card__link-value">
-                      {metric.value}
-                      <span aria-hidden="true" className="metric-card__link-indicator">
-                        <svg viewBox="0 0 16 16" focusable="false">
-                          <path
-                            d="M5 11L11 5M6 5h5v5"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.8"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </span>
-                    </strong>
-                  </a>
-                ) : (
-                  <article key={metric.label} className="metric-card">
-                    <span>{metric.label}</span>
-                    <strong>{metric.value}</strong>
-                  </article>
-                )
+                <article key={metric.label} className="metric-card">
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                </article>
               ))}
             </div>
           </div>
@@ -242,31 +244,31 @@ function HomePage() {
         <SectionShell
           id="impact"
           eyebrow="Focus"
-          title="The work I’m most drawn to usually makes something **simpler, clearer, or easier to use**."
-          summary="That can mean **product features, platform work, developer tooling**, or just making a system easier for the next person to work in."
+          title="I turn messy banking data into **cleaner decisions, sharper questions, and calmer reporting**."
+          summary="That can mean **forecasting, segmentation, KPI design, risk signals, data quality checks**, or a dashboard that finally answers the real question."
         >
           <div className="impact-grid">
             <article className="glass-card feature-card">
-              <h3>Own the whole path</h3>
+              <h3>Clarify the question</h3>
               <p>
                 {renderInlineEmphasis(
-                  "I like being able to follow a problem from the **interface** all the way down to the **backend and operational details**."
+                  "Good analytics starts before the query. I like pinning down the **decision, audience, metric definition, and tradeoff** first."
                 )}
               </p>
             </article>
             <article className="glass-card feature-card">
-              <h3>Bring systems thinking into product work</h3>
+              <h3>Build reliable paths</h3>
               <p>
                 {renderInlineEmphasis(
-                  "A lot of what I’ve learned from **systems and platform work** shows up in how I build product software too."
+                  "The work has to be repeatable: **clean data pulls, validation checks, model-ready datasets, and reporting logic** people can trust."
                 )}
               </p>
             </article>
             <article className="glass-card feature-card">
-              <h3>Build things other engineers use</h3>
+              <h3>Make the signal obvious</h3>
               <p>
                 {renderInlineEmphasis(
-                  "Some of the most satisfying work for me is **tooling, visibility, onboarding, and internal abstractions**."
+                  "A chart is only useful if it changes what happens next. I focus on **context, movement, confidence, and recommended action**."
                 )}
               </p>
             </article>
@@ -276,8 +278,8 @@ function HomePage() {
         <SectionShell
           id="experience"
           eyebrow="Experience"
-          title="This is the fastest way to get a feel for the kinds of **work I’ve done**."
-          summary="It spans **product engineering, platform work, and leading teams** while still staying close to the code."
+          title="A quick view of the analytics work I am building around."
+          summary="The current shape is **banking data science, analysis, reporting, and stakeholder decision support**."
         >
           <div className="experience-grid">
             {profileContent.experience.map((entry) => (
@@ -293,8 +295,8 @@ function HomePage() {
         <SectionShell
           id="projects"
           eyebrow="Projects"
-          title="These projects fill in the rest of the picture."
-          summary="They’re the ones that say the most about **what I like building when nobody is assigning it to me**."
+          title="Selected analytics projects and case studies."
+          summary="These are designed around **public, synthetic, or privacy-safe examples** so the portfolio can show your thinking without exposing bank data."
         >
           <div className="project-grid">
             {profileContent.projects.map((project) => (
@@ -310,8 +312,8 @@ function HomePage() {
         <SectionShell
           id="craft"
           eyebrow="How I work"
-          title="The stack matters less to me than **how the pieces connect**."
-          summary="I care a lot about **good boundaries, good defaults, and making software easier to work in over time**."
+          title="The tools matter, but the judgment matters more."
+          summary="I care about **definitions, trust, repeatability, and communication** because those decide whether an analysis survives contact with the real meeting."
         >
           <div className="skill-grid">
             {profileContent.skillClusters.map((cluster) => (
@@ -323,15 +325,15 @@ function HomePage() {
         <SectionShell
           id="contact"
           eyebrow="Contact"
-          title="If this looks like the kind of background you need, reach out."
-          summary="I’m especially interested in work where **product thinking and technical ownership** both matter."
+          title="Reach out about analytics, reporting, or data science work."
+          summary="I am especially interested in work where **data needs to become a practical decision**."
         >
           <div className="glass-card contact-card">
             <div>
               <h3>Reach out</h3>
               <p>
                 {renderInlineEmphasis(
-                  "Email is easiest, but the **resume, GitHub, and LinkedIn** are here too if you want to look around first."
+                  "Email is the simplest path for now. This section can grow into LinkedIn, GitHub, or case-study links once those are ready."
                 )}
               </p>
             </div>
