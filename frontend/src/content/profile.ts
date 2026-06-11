@@ -2,33 +2,36 @@ import type { ProfileContent } from "../types/content";
 
 export const profileContent: ProfileContent = {
   name: "Jake Brulato",
-  title: "Data scientist and analyst turning banking data into clearer decisions.",
-  location: "United States",
-  email: "your.email@example.com",
+  title: "Data Management Analyst focused on AI governance, data strategy, and analytics automation.",
+  location: "Charlotte, NC",
+  email: "jakebrulato@gmail.com",
   heroSummary:
-    "I work where **finance, analytics, and decision-making** meet: finding signal in messy data, building useful models, and turning analysis into something teams can act on.",
+    "I work at the intersection of **banking data management, model risk, Generative AI workflows, and analytics**. I like turning complex data environments into cleaner systems people can trust and use.",
   heroBullets: [
-    "I focus on **banking analytics, reporting, forecasting, segmentation, and operational insight**.",
-    "I like projects that connect the raw data layer to the final decision: **SQL, Python, dashboards, stakeholder questions, and measurable business impact**.",
-    "This portfolio is shaped like a city map because good analysis feels like that too: routes, signals, bottlenecks, movement, and patterns hiding in plain sight."
+    "Currently a **Data Management Analyst at Wells Fargo**, focused on machine learning lineage, Generative AI workflows, enterprise inventory reconciliation, and approved data source strategy.",
+    "Recently supported **Model Risk Management validators** across LLM, AI, and ML model review, governance, QA, and internal AI tool development.",
+    "My background combines a **Data Science and Business Analytics MS**, business analytics education, dashboarding, Python, SQL, SAS, R, Tableau, and cloud/data platform tools."
   ],
   metrics: [
-    { label: "Main lane", value: "Data science" },
-    { label: "Domain", value: "Banking" },
-    { label: "Toolkit", value: "Python + SQL" },
-    { label: "Strength", value: "Insight to action" }
+    { label: "Current role", value: "Data Management Analyst" },
+    { label: "Domain", value: "Banking + AI governance" },
+    { label: "Education", value: "MS Data Science" },
+    { label: "Location", value: "Charlotte, NC" }
   ],
   links: [
-    { label: "Email", href: "mailto:your.email@example.com" }
+    { label: "Email", href: "mailto:jakebrulato@gmail.com" },
+    { label: "LinkedIn", href: "https://linkedin.com/in/jake-brulato" },
+    { label: "GitHub", href: "https://github.com/EviIius" },
+    { label: "Resume", href: "/files/resume.pdf" }
   ],
   sceneSections: [
     {
       id: "hero",
       label: "Intro",
       eyebrow: "Intro",
-      title: "I turn banking data into decisions people can actually use.",
+      title: "I turn governed banking data into traceable, decision-ready systems.",
       summary:
-        "The city map is a visual shorthand for the work: complex systems, moving signals, risk corridors, customer paths, and the judgment needed to make sense of it.",
+        "The city map is a visual shorthand for the work: data sources, lineage paths, AI workflows, risk signals, and the judgment needed to make them reliable.",
       position: [-8, 3, -1],
       camera: [-1, 1.8, 14],
       target: [-4, 1.4, 0],
@@ -38,9 +41,9 @@ export const profileContent: ProfileContent = {
       id: "impact",
       label: "Focus",
       eyebrow: "Focus",
-      title: "I look for the patterns that change the conversation.",
+      title: "I look for the gaps, paths, and controls that make data easier to trust.",
       summary:
-        "That might be a dashboard, a model, a trend break, a data quality issue, or a sharper way to frame the business question.",
+        "That can mean documenting machine learning lineage, reconciling inventory data, validating source ownership, reviewing model documentation, or building analytics that make operations easier to understand.",
       position: [-2, 0, 1],
       camera: [2, 1.2, 12],
       target: [0, 0.2, 0],
@@ -50,9 +53,9 @@ export const profileContent: ProfileContent = {
       id: "experience",
       label: "Experience",
       eyebrow: "Experience",
-      title: "My work sits inside banking analytics and decision support.",
+      title: "Banking data management, model risk, logistics analytics, and analytics education.",
       summary:
-        "The through-line is practical analysis: data you can trust, models you can explain, and outputs that help teams move.",
+        "My experience has moved from operational analytics into model governance and enterprise data management, with a graduate foundation in data science and business analytics.",
       position: [4, 1.8, -2],
       camera: [5.5, 2.1, 11],
       target: [4.2, 1, -1.5],
@@ -62,9 +65,9 @@ export const profileContent: ProfileContent = {
       id: "projects",
       label: "Projects",
       eyebrow: "Projects",
-      title: "Selected analytics projects and case studies.",
+      title: "Projects and case studies across automation, APIs, dashboards, and governance.",
       summary:
-        "These are portfolio-ready lanes for the kind of work a banking data scientist and analyst can show without exposing private company data.",
+        "These show the practical side of the work: scraping data, integrating APIs, building dashboards, and turning complex enterprise processes into cleaner workflows.",
       position: [7, -1.6, 0],
       camera: [6.5, 0.6, 12.5],
       target: [6.2, -0.8, 0],
@@ -74,9 +77,9 @@ export const profileContent: ProfileContent = {
       id: "craft",
       label: "Craft",
       eyebrow: "How I work",
-      title: "Good analysis needs structure before it needs polish.",
+      title: "Good analysis needs governance, engineering, and communication.",
       summary:
-        "I care about clean definitions, explainable methods, repeatable workflows, and visuals that make the next step obvious.",
+        "I care about clean definitions, traceable workflows, repeatable analysis, and outputs that make the next decision easier.",
       position: [1, -3.4, -1],
       camera: [1.8, -1.1, 12.8],
       target: [1.5, -2, -0.5],
@@ -86,9 +89,9 @@ export const profileContent: ProfileContent = {
       id: "contact",
       label: "Contact",
       eyebrow: "Contact",
-      title: "Reach out about analytics, reporting, or data science work.",
+      title: "Reach out about data management, analytics, model risk, or AI governance work.",
       summary:
-        "I am interested in projects where data has to become a decision, not just a chart.",
+        "Email, LinkedIn, GitHub, and the current resume are available here.",
       position: [-5, -2.4, 1],
       camera: [-3.6, -0.4, 13],
       target: [-3.6, -1.2, 0],
@@ -97,171 +100,241 @@ export const profileContent: ProfileContent = {
   ],
   experience: [
     {
-      slug: "banking-analytics-data-scientist-analyst",
-      company: "Banking Analytics",
-      role: "Data Scientist & Analyst",
-      timeframe: "Current",
-      location: "United States",
+      slug: "wells-fargo-data-management-analyst",
+      company: "Wells Fargo",
+      role: "Data Management Analyst",
+      timeframe: "06/2025-Present",
+      location: "Charlotte, NC",
       summary:
-        "Analytics role focused on making banking data easier to understand, monitor, explain, and use in business decisions.",
+        "Data management role focused on machine learning lineage, Generative AI workflows, enterprise inventory reconciliation, and approved data source strategy.",
       highlights: [
-        "Translate stakeholder questions into analysis plans, data pulls, model-ready datasets, and decision-focused summaries.",
-        "Work across SQL, Python, spreadsheets, dashboards, and statistical methods to identify patterns, risks, customer segments, and operational trends.",
-        "Build repeatable reporting and analysis workflows so recurring decisions are based on consistent definitions instead of one-off data pulls.",
-        "Communicate findings in plain language, with enough technical detail for review and enough context for action."
+        "Documented high-risk machine learning lineage and Generative AI workflows to improve enterprise-wide consistency, traceability, and governance across model and AI-related processes.",
+        "Built automated reconciliation processes across enterprise inventory data so downstream reporting, controls, and decision-making had more accurate and accessible information.",
+        "Supported approved data source strategy by investigating enterprise applications, identifying source-system gaps, validating data ownership, and strengthening governed data usage."
       ],
       tags: [
+        { label: "Data management", tone: "practice" },
+        { label: "Machine learning lineage", tone: "domain" },
+        { label: "Generative AI", tone: "domain" },
+        { label: "Data governance", tone: "practice" },
+        { label: "Inventory reconciliation", tone: "practice" },
+        { label: "Approved data sources", tone: "domain" },
+        { label: "Enterprise data", tone: "domain" },
+        { label: "Controls", tone: "practice" }
+      ]
+    },
+    {
+      slug: "wells-fargo-model-risk-management-extern",
+      company: "Wells Fargo",
+      role: "Model Risk Management Extern - Decision Science & Artificial Intelligence",
+      timeframe: "10/2024-06/2025",
+      location: "Charlotte, NC",
+      summary:
+        "Eight-month externship supporting MRM DSAI validators in the testing, review, and approval of LLM, AI, and ML models across multiple lines of business.",
+      highlights: [
+        "Evaluated model risk rankings using vendor model documentation and internal governance criteria, improving review consistency and helping reduce model approval cycle time.",
+        "Recreated autonomous agent workflows using open-source LLMs, researched long-term memory design, and built a scalable memory store architecture for future AI tool development.",
+        "Conducted QA reviews on model validation reports to improve documentation accuracy, compliance alignment, and adherence to model governance standards."
+      ],
+      tags: [
+        { label: "Model risk", tone: "domain" },
+        { label: "LLMs", tone: "domain" },
+        { label: "AI validation", tone: "practice" },
+        { label: "Machine learning", tone: "domain" },
+        { label: "Autonomous agents", tone: "domain" },
+        { label: "Governance", tone: "practice" },
+        { label: "QA review", tone: "practice" },
+        { label: "Open-source LLMs", tone: "infrastructure" }
+      ]
+    },
+    {
+      slug: "alg-worldwide-logistics-freight-forwarder",
+      company: "ALG Worldwide Logistics",
+      role: "Freight Forwarder",
+      timeframe: "01/2022-01/2023",
+      location: "Charlotte, NC",
+      summary:
+        "Logistics role balancing transportation operations with analytics work while completing full-time academic coursework.",
+      highlights: [
+        "Built Tableau dashboards for supervisors showing shipment cost trends, margin performance, and transportation options for faster operational decision-making.",
+        "Evaluated transportation market trends using R and Python to identify opportunities for carrier selection, routing, and shipment strategy improvements.",
+        "Queried shipment and pricing data using SQL and database management systems across Ground, Expedited, Air, and Ocean transportation."
+      ],
+      tags: [
+        { label: "Tableau", tone: "framework" },
+        { label: "Python", tone: "language" },
+        { label: "R", tone: "language" },
+        { label: "SQL", tone: "language" },
+        { label: "Operational analytics", tone: "domain" },
+        { label: "Logistics", tone: "domain" },
+        { label: "Dashboarding", tone: "practice" },
+        { label: "Market analysis", tone: "practice" }
+      ]
+    },
+    {
+      slug: "unc-charlotte-ms-data-science-business-analytics",
+      company: "University of North Carolina at Charlotte",
+      role: "MS, Data Science and Business Analytics",
+      timeframe: "06/2023-05/2025",
+      location: "Charlotte, NC",
+      summary:
+        "Graduate program focused on data science, business analytics, applied modeling, and analytics-driven decision support.",
+      highlights: [
+        "Completed graduate coursework with a 4.00 GPA.",
+        "Built depth across data science, analytics, statistics, programming, and business-facing analysis."
+      ],
+      tags: [
+        { label: "Data science", tone: "domain" },
+        { label: "Business analytics", tone: "domain" },
         { label: "Python", tone: "language" },
         { label: "SQL", tone: "language" },
-        { label: "Banking analytics", tone: "domain" },
-        { label: "Forecasting", tone: "domain" },
-        { label: "Dashboards", tone: "practice" },
-        { label: "Data storytelling", tone: "practice" },
-        { label: "Stakeholder reporting", tone: "practice" },
-        { label: "Risk signals", tone: "domain" },
-        { label: "Data quality", tone: "practice" }
+        { label: "Statistics", tone: "domain" },
+        { label: "GPA 4.00", tone: "practice" }
+      ]
+    },
+    {
+      slug: "unc-charlotte-bs-business-analytics",
+      company: "University of North Carolina at Charlotte",
+      role: "BS, Business Administration - Business Analytics",
+      timeframe: "08/2019-06/2023",
+      location: "Charlotte, NC",
+      summary:
+        "Undergraduate business analytics foundation combining business administration, data analysis, and applied technical coursework.",
+      highlights: [
+        "Completed undergraduate coursework with a 3.74 GPA.",
+        "Built an early foundation in analytics, business context, data systems, and decision support."
+      ],
+      tags: [
+        { label: "Business analytics", tone: "domain" },
+        { label: "Business administration", tone: "domain" },
+        { label: "Decision support", tone: "practice" },
+        { label: "Data systems", tone: "infrastructure" },
+        { label: "GPA 3.74", tone: "practice" }
       ]
     }
   ],
   projects: [
     {
-      slug: "banking-signal-dashboard",
-      title: "Banking Signal Dashboard",
+      slug: "housing-scraper",
+      title: "Housing Scraper",
       description:
-        "A dashboard concept for tracking **portfolio health, risk movement, customer behavior, and operational changes** in one scan-friendly view.",
+        "A Python-based web scraper that automates **data extraction, parsing, cleaning, and organization** from housing-related websites.",
       impact:
-        "Designed to show how I would turn scattered banking metrics into a daily decision surface with clear priorities and drill-down paths.",
-      stack: [
-        "SQL",
-        "Python",
-        "Power BI",
-        "Banking analytics",
-        "Risk indicators",
-        "Dashboard design"
-      ],
-      links: [{ label: "Contact", href: "/#contact" }]
-    },
-    {
-      slug: "customer-segment-map",
-      title: "Customer Segment Map",
-      description:
-        "A segmentation case study that groups customers by **behavior, product usage, lifecycle stage, and engagement patterns**.",
-      impact:
-        "Useful for targeting outreach, understanding churn risk, and explaining how different customer groups move through the bank.",
+        "Reduces manual collection work and turns scattered web data into structured information that can be analyzed.",
       stack: [
         "Python",
-        "pandas",
-        "Clustering",
-        "Customer analytics",
-        "Feature engineering",
-        "Data visualization"
+        "Web scraping",
+        "Data automation",
+        "Parsing",
+        "Data cleaning",
+        "Analysis-ready datasets"
       ],
-      links: [{ label: "Contact", href: "/#contact" }]
+      links: [{ label: "Source", href: "https://github.com/EviIius/WebScraper" }]
     },
     {
-      slug: "forecast-variance-tracker",
-      title: "Forecast & Variance Tracker",
+      slug: "flighttracker",
+      title: "FlightTracker",
       description:
-        "A forecasting workflow for comparing actuals against expected trends and highlighting where results are drifting.",
+        "A flight tracking application that integrates external APIs and displays **routes, schedules, status updates, and airport-related information**.",
       impact:
-        "Built around the question leaders usually ask next: what changed, how much does it matter, and where should we look first?",
+        "Shows API integration, data retrieval, processing workflows, and user-facing presentation of live travel information.",
       stack: [
-        "Python",
-        "Time series",
-        "Forecasting",
-        "Variance analysis",
-        "Excel",
-        "Executive reporting"
+        "API integration",
+        "Data retrieval",
+        "Data processing",
+        "Flight data",
+        "Application design",
+        "Travel information"
       ],
-      links: [{ label: "Contact", href: "/#contact" }]
+      links: [{ label: "Source", href: "https://github.com/EviIius/FlightTracker" }]
     },
     {
-      slug: "transaction-pattern-monitor",
-      title: "Transaction Pattern Monitor",
+      slug: "ml-lineage-genai-governance",
+      title: "ML Lineage & GenAI Governance",
       description:
-        "A monitoring concept for surfacing **volume shifts, unusual transaction behavior, and emerging account-level patterns**.",
+        "Professional work documenting high-risk **machine learning lineage and Generative AI workflows** across enterprise model and AI processes.",
       impact:
-        "The goal is not just anomaly detection, but a clean explanation path from signal to investigation to follow-up action.",
+        "Improved traceability, consistency, and governance for processes that need clear ownership and review paths.",
       stack: [
-        "SQL",
-        "Python",
-        "Anomaly detection",
-        "Transaction data",
-        "Monitoring",
-        "Alert logic"
+        "Machine learning lineage",
+        "Generative AI",
+        "Data governance",
+        "Traceability",
+        "Enterprise inventory",
+        "Risk controls"
       ],
-      links: [{ label: "Contact", href: "/#contact" }]
+      links: [{ label: "Resume", href: "/files/resume.pdf" }]
     },
     {
-      slug: "executive-kpi-brief",
-      title: "Executive KPI Brief",
+      slug: "enterprise-inventory-reconciliation",
+      title: "Enterprise Inventory Reconciliation",
       description:
-        "A reporting format that turns dense metric packs into **short, visual, decision-ready summaries** for non-technical audiences.",
+        "Automated reconciliation processes across enterprise inventory data to improve **accuracy, completeness, and accessibility**.",
       impact:
-        "Built for faster alignment: the key movement, the likely cause, the confidence level, and the recommended next question.",
+        "Helped downstream reporting, controls, and decision-making rely on cleaner enterprise data.",
+      stack: [
+        "Automation",
+        "Data reconciliation",
+        "Enterprise data",
+        "Controls",
+        "Reporting",
+        "Data ownership"
+      ],
+      links: [{ label: "Resume", href: "/files/resume.pdf" }]
+    },
+    {
+      slug: "logistics-analytics-dashboard",
+      title: "Logistics Analytics Dashboard",
+      description:
+        "Tableau dashboard work for shipment cost trends, margin performance, transportation options, and operational decision support.",
+      impact:
+        "Gave supervisors a faster way to compare transportation options and understand margin and shipment-cost movement.",
       stack: [
         "Tableau",
-        "Power BI",
-        "KPI design",
-        "Data storytelling",
-        "Business analytics",
-        "Stakeholder communication"
-      ],
-      links: [{ label: "Contact", href: "/#contact" }]
-    },
-    {
-      slug: "data-quality-radar",
-      title: "Data Quality Radar",
-      description:
-        "A data reliability layer for checking **missingness, duplicates, freshness, definition drift, and outlier behavior** before analysis goes out.",
-      impact:
-        "A practical guardrail for banking analytics work, where trust in the input data is part of the final recommendation.",
-      stack: [
         "SQL",
         "Python",
-        "Data validation",
-        "Data quality",
-        "Automation",
-        "Analytics engineering"
+        "R",
+        "Transportation analytics",
+        "Operational dashboards"
       ],
-      links: [{ label: "Contact", href: "/#contact" }]
+      links: [{ label: "Resume", href: "/files/resume.pdf" }]
     }
   ],
   skillClusters: [
     {
-      title: "Banking Analytics",
+      title: "Data Management & Governance",
       summary:
-        "I am strongest when the data connects to a real financial decision, operational question, or risk signal.",
+        "Experience with governed data usage, ownership validation, enterprise inventory reconciliation, and source-system analysis.",
       items: [
-        "Portfolio and customer analytics",
-        "Risk and performance indicators",
-        "Trend, variance, and behavior analysis",
-        "Executive-ready reporting",
-        "Data quality checks"
+        "Machine learning lineage",
+        "Generative AI workflow documentation",
+        "Approved data source strategy",
+        "Enterprise inventory reconciliation",
+        "Data ownership and traceability"
       ]
     },
     {
-      title: "Data Science Workflow",
+      title: "Model Risk & AI Validation",
       summary:
-        "I like repeatable analysis paths: clear inputs, careful transformations, explainable models, and outputs people can review.",
+        "Hands-on exposure to LLM, AI, and ML model review through model risk management and internal AI tooling work.",
       items: [
-        "Python and SQL analysis",
-        "Feature engineering",
-        "Forecasting and segmentation",
-        "Model interpretation",
-        "Reusable reporting pipelines"
+        "Model risk ranking review",
+        "Vendor model documentation",
+        "Model validation QA",
+        "Autonomous agent workflows",
+        "Long-term memory architecture"
       ]
     },
     {
-      title: "Decision Communication",
+      title: "Analytics & Engineering Toolkit",
       summary:
-        "The final mile matters: a good insight should make the tradeoff, risk, and next action easier to see.",
+        "A broad toolkit across analytics languages, frameworks, cloud platforms, data systems, and dashboarding tools.",
       items: [
-        "Dashboard and KPI design",
-        "Stakeholder storytelling",
-        "Plain-language summaries",
-        "Visual hierarchy",
-        "Recommendation framing"
+        "Python, SQL, SAS, R, JavaScript, Java, Swift",
+        "React, Spring Boot, Angular, Next.js, Node, Django, Express",
+        "AWS, GCP, Azure, Snowflake, Docker, Kubernetes, Terraform",
+        "Kafka, Apache Beam, BigQuery, PostgreSQL, Firebase, MongoDB, Grafana",
+        "Tableau dashboards and business-facing analytics"
       ]
     }
   ],

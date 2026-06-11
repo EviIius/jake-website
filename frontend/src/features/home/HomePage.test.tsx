@@ -23,10 +23,10 @@ describe("HomePage", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("scene-backdrop")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /These projects fill in the rest of the picture/i })
+      screen.getByRole("heading", { name: /Projects and case studies from the resume/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /^Banking Signal Dashboard$/i })
+      screen.getByRole("heading", { name: /^Housing Scraper$/i })
     ).toBeInTheDocument();
     expect(
       screen
@@ -34,7 +34,12 @@ describe("HomePage", () => {
         .some((link) => link.getAttribute("href") === "/#contact")
     ).toBe(true);
     expect(
-      screen.getByRole("img", { name: /City analytics signal map/i })
+      screen
+        .getAllByRole("link", { name: /Resume/i })
+        .some((link) => link.getAttribute("href") === "/files/resume.pdf")
+    ).toBe(true);
+    expect(
+      screen.getByRole("img", { name: /Jake Brulato portrait/i })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /Go to|Return to top/i })
@@ -77,7 +82,7 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/#experience/banking-analytics-data-scientist-analyst"]}>
+      <MemoryRouter initialEntries={["/#experience/wells-fargo-data-management-analyst"]}>
         <HomePage />
       </MemoryRouter>
     );
@@ -103,7 +108,7 @@ describe("HomePage", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     render(
-      <MemoryRouter initialEntries={["/#projects/banking-signal-dashboard"]}>
+      <MemoryRouter initialEntries={["/#projects/housing-scraper"]}>
         <HomePage />
       </MemoryRouter>
     );

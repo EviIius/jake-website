@@ -35,7 +35,7 @@ function SiteNavigation({
   activeSectionId,
   onSectionNavigate,
   brandTitle = "Jake Brulato",
-  brandSubtitle = "data scientist & analyst",
+  brandSubtitle = "data management analyst",
   brandHref = "/",
   showActions = true
 }: SiteNavigationProps) {
@@ -178,14 +178,14 @@ function SiteNavigation({
             <div className="site-nav__actions">
               <a
                 className="site-nav__button site-nav__button--ghost"
-                href="/#contact"
+                href="/files/resume.pdf"
                 onClick={() => setIsMenuOpen(false)}
               >
+                Resume
+              </a>
+              <a className="site-nav__button" href="/#contact" onClick={() => setIsMenuOpen(false)}>
                 Contact
               </a>
-              <Link className="site-nav__button" to="/concepts" onClick={() => setIsMenuOpen(false)}>
-                City Concept
-              </Link>
             </div>
           ) : null}
         </div>

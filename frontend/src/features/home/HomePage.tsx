@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import headshotAsset from "../../assets/jake-headshot.jpg";
 import ExperienceCard from "../../components/ExperienceCard";
 import ProjectCard from "../../components/ProjectCard";
 import { renderInlineEmphasis } from "../../components/renderInlineEmphasis";
@@ -204,29 +205,20 @@ function HomePage() {
           </div>
 
           <div className="hero-panel__aside">
-            <div className="hero-panel__portrait-wrap hero-panel__portrait-wrap--data">
-              <div className="hero-panel__data-portrait" role="img" aria-label="City analytics signal map">
-                <span className="data-portrait__route data-portrait__route--a" />
-                <span className="data-portrait__route data-portrait__route--b" />
-                <span className="data-portrait__route data-portrait__route--c" />
-                <span className="data-portrait__node data-portrait__node--one" />
-                <span className="data-portrait__node data-portrait__node--two" />
-                <span className="data-portrait__node data-portrait__node--three" />
-                <span className="data-portrait__node data-portrait__node--four" />
-                <div className="data-portrait__panel data-portrait__panel--score">
-                  <span>Risk Signal</span>
-                  <strong>+18%</strong>
+            <div className="hero-panel__portrait-wrap hero-panel__portrait-wrap--photo">
+              <img src={headshotAsset} alt="Jake Brulato portrait" className="hero-panel__portrait" />
+              <div className="hero-panel__portrait-data" aria-hidden="true">
+                <span className="portrait-signal-line portrait-signal-line--one" />
+                <span className="portrait-signal-line portrait-signal-line--two" />
+                <span className="portrait-signal-node portrait-signal-node--one" />
+                <span className="portrait-signal-node portrait-signal-node--two" />
+                <div className="portrait-data-card portrait-data-card--role">
+                  <span>Current</span>
+                  <strong>Data Management</strong>
                 </div>
-                <div className="data-portrait__panel data-portrait__panel--trend">
-                  <span>Portfolio Flow</span>
-                  <strong>Stable</strong>
-                </div>
-                <div className="data-portrait__bars" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
+                <div className="portrait-data-card portrait-data-card--focus">
+                  <span>Focus</span>
+                  <strong>AI Governance</strong>
                 </div>
               </div>
             </div>
@@ -244,31 +236,31 @@ function HomePage() {
         <SectionShell
           id="impact"
           eyebrow="Focus"
-          title="I turn messy banking data into **cleaner decisions, sharper questions, and calmer reporting**."
-          summary="That can mean **forecasting, segmentation, KPI design, risk signals, data quality checks**, or a dashboard that finally answers the real question."
+          title="I make enterprise data easier to trace, reconcile, govern, and explain."
+          summary="That can mean **machine learning lineage, Generative AI workflow documentation, model risk review, approved data source strategy**, or analytics that make operational decisions clearer."
         >
           <div className="impact-grid">
             <article className="glass-card feature-card">
-              <h3>Clarify the question</h3>
+              <h3>Trace the system</h3>
               <p>
                 {renderInlineEmphasis(
-                  "Good analytics starts before the query. I like pinning down the **decision, audience, metric definition, and tradeoff** first."
+                  "The work starts with understanding where data comes from, who owns it, how it moves, and what controls need to be visible."
                 )}
               </p>
             </article>
             <article className="glass-card feature-card">
-              <h3>Build reliable paths</h3>
+              <h3>Automate the checks</h3>
               <p>
                 {renderInlineEmphasis(
-                  "The work has to be repeatable: **clean data pulls, validation checks, model-ready datasets, and reporting logic** people can trust."
+                  "I like turning repeated reconciliation, inventory, and reporting work into **cleaner processes with fewer manual gaps**."
                 )}
               </p>
             </article>
             <article className="glass-card feature-card">
-              <h3>Make the signal obvious</h3>
+              <h3>Explain the risk</h3>
               <p>
                 {renderInlineEmphasis(
-                  "A chart is only useful if it changes what happens next. I focus on **context, movement, confidence, and recommended action**."
+                  "Whether it is an LLM, AI model, dashboard, or data source, the output has to make review criteria and next steps easier to see."
                 )}
               </p>
             </article>
@@ -278,8 +270,8 @@ function HomePage() {
         <SectionShell
           id="experience"
           eyebrow="Experience"
-          title="A quick view of the analytics work I am building around."
-          summary="The current shape is **banking data science, analysis, reporting, and stakeholder decision support**."
+          title="Experience across banking data management, model risk, logistics analytics, and analytics education."
+          summary="The current shape is **Wells Fargo data governance and AI workflows**, backed by model risk experience and a graduate analytics foundation."
         >
           <div className="experience-grid">
             {profileContent.experience.map((entry) => (
@@ -295,8 +287,8 @@ function HomePage() {
         <SectionShell
           id="projects"
           eyebrow="Projects"
-          title="Selected analytics projects and case studies."
-          summary="These are designed around **public, synthetic, or privacy-safe examples** so the portfolio can show your thinking without exposing bank data."
+          title="Projects and case studies from the resume."
+          summary="A mix of public GitHub projects and privacy-safe summaries of professional analytics, governance, and reconciliation work."
         >
           <div className="project-grid">
             {profileContent.projects.map((project) => (
@@ -312,8 +304,8 @@ function HomePage() {
         <SectionShell
           id="craft"
           eyebrow="How I work"
-          title="The tools matter, but the judgment matters more."
-          summary="I care about **definitions, trust, repeatability, and communication** because those decide whether an analysis survives contact with the real meeting."
+          title="The tools matter, but trust is the real product."
+          summary="I care about **lineage, ownership, QA, repeatability, and communication** because those decide whether data work holds up in review."
         >
           <div className="skill-grid">
             {profileContent.skillClusters.map((cluster) => (
@@ -325,15 +317,15 @@ function HomePage() {
         <SectionShell
           id="contact"
           eyebrow="Contact"
-          title="Reach out about analytics, reporting, or data science work."
-          summary="I am especially interested in work where **data needs to become a practical decision**."
+          title="Reach out about data management, analytics, model risk, or AI governance work."
+          summary="I am especially interested in work where **data needs to be trusted before it can become a decision**."
         >
           <div className="glass-card contact-card">
             <div>
               <h3>Reach out</h3>
               <p>
                 {renderInlineEmphasis(
-                  "Email is the simplest path for now. This section can grow into LinkedIn, GitHub, or case-study links once those are ready."
+                  "Email, LinkedIn, GitHub, and my current resume are all here if you want the full picture."
                 )}
               </p>
             </div>
