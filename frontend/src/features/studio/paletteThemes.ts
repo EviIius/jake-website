@@ -590,7 +590,7 @@ function applyThemeToDom(theme: PaletteTheme): void {
   if (icon) {
     icon.href =
       theme.id === "indigo"
-        ? "/favicon.svg"
+        ? `${import.meta.env.BASE_URL}favicon.svg`
         : buildFaviconDataUrl(theme.brandStops);
   }
 }

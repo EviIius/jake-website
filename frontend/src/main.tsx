@@ -15,12 +15,19 @@ const useBrowserHistory =
     window.location.protocol === "https:") &&
   window.location.origin !== "null";
 
-const Router = useBrowserHistory ? BrowserRouter : MemoryRouter;
+const routerBase =
+  import.meta.env.BASE_URL.replace(/\/+$/, "") || "/";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
+    {useBrowserHistory ? (
+      <BrowserRouter basename={routerBase}>
+        <App />
+      </BrowserRouter>
+    ) : (
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    )}
   </React.StrictMode>,
 );

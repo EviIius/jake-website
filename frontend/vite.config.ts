@@ -7,6 +7,7 @@ const frontendRoot = fileURLToPath(new URL(".", import.meta.url));
 const workspaceRoot = fileURLToPath(new URL("..", import.meta.url));
 
 export default defineConfig({
+  base: process.env.VITE_BASE_PATH || "/",
   plugins: [react()],
   resolve: {
     dedupe: ["react", "react-dom"],

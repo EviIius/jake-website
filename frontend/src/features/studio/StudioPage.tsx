@@ -722,14 +722,14 @@ export default function StudioPage() {
                 <div className="theater-slim-bar__right">
                   <a
                     className="theater-slim-bar__link"
-                    href="/files/resume.pdf"
+                    href={`${import.meta.env.BASE_URL}files/resume.pdf`}
                     download="Jake_Brulato_Resume.pdf"
                   >
                     Download PDF <span aria-hidden="true">↓</span>
                   </a>
                   <a
                     className="theater-slim-bar__link"
-                    href="/files/resume.pdf"
+                    href={`${import.meta.env.BASE_URL}files/resume.pdf`}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -739,7 +739,7 @@ export default function StudioPage() {
               </div>
               <div className="theater-iframe-stage theater-iframe-stage--pdf">
                 <iframe
-                  src="/files/resume.pdf#view=FitH"
+                  src={`${import.meta.env.BASE_URL}files/resume.pdf#view=FitH`}
                   title="Jake Brulato résumé PDF"
                 />
               </div>

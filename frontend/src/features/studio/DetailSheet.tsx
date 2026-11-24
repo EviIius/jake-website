@@ -574,7 +574,7 @@ export default function DetailSheet({
                     </button>
                   ) : (
                     <a
-                      href="/files/resume.pdf"
+                      href={`${import.meta.env.BASE_URL}files/resume.pdf`}
                       className="sheet-contact-row"
                       role="listitem"
                     >
