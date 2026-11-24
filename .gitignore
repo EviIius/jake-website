@@ -1,3 +1,11 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+*.local
+.playwright-libs/
+playwright-report/
+test-results/
 linkedin_snapshots/
 *:Zone.Identifier
 *Zone.Identifier

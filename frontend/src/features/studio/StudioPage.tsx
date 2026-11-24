@@ -1,0 +1,961 @@
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
+import type { SkillEvidenceLink } from "../../types/content";
+import { useStudioViewport } from "../../utils/scaleUnit";
+import BrandMark from "./BrandMark";
+import DetailSheet from "./DetailSheet";
+import MobilePortfolio from "./MobilePortfolio";
+import PalettePickerControl from "./PalettePickerControl";
+import { usePaletteTheme } from "./paletteThemes";
+import SpatialStage, { type ProjectedLabelMap } from "./SpatialStage";
+import { soundEngine } from "./soundEngine";
+import {
+  SECTIONS,
+  getItemsForSection,
+  getSectionConfig,
+  type SectionId,
+} from "./spatialModel";
+import "./explorer.css";
+
+function resolveSection(params: URLSearchParams): SectionId {
+  const sec = params.get("section");
+  if (SECTIONS.some((s) => s.id === sec)) return sec as SectionId;
+  if (params.get("project")) return "projects";
+  return "experience";
+}
+
+export default function StudioPage() {
+  const [params, setParams] = useSearchParams();
+  const location = useLocation();
+  const { isMobile, isCompactHeader, isCompactAudio } = useStudioViewport();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const { theme, themes, setTheme, cycleTheme } = usePaletteTheme();
+
+  const section = resolveSection(params);
+  const itemSlug = params.get("item") ?? params.get("project");
+  const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
+  const [resumeOpen, setResumeOpen] = useState(false);
+  const [audioState, setAudioState] = useState(() => soundEngine.getState());
+
+  // Floating 5×5×5 GameCube crystal intro + big "Enter" button on desktop entry
+  const [hasEntered, setHasEntered] = useState(() => {
+    const reduced =
+      typeof window !== "undefined" &&
+      Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+    return reduced || isMobile;
+  });
+  const [bootExiting, setBootExiting] = useState(false);
+  const [bootRevealing, setBootRevealing] = useState(false);
+  const [bootHovering, setBootHovering] = useState(false);
+  const showBootOverlay = !hasEntered && !isMobile && !prefersReducedMotion;
+
+  const handleEnterStudio = useCallback(() => {
+    if (bootExiting || hasEntered) return;
+    soundEngine.enterWithSound();
+    setBootHovering(false);
+    setBootExiting(true);
+    setBootRevealing(true);
+    setHasEntered(true);
+    window.setTimeout(() => setBootExiting(false), 360);
+    window.setTimeout(() => setBootRevealing(false), 1150);
+  }, [bootExiting, hasEntered]);
+
+  const items = useMemo(
+    () => getItemsForSection(section, theme),
+    [section, theme],
+  );
+
+  const selected = useMemo(
+    () => items.find((i) => i.slug === itemSlug) ?? null,
+    [items, itemSlug],
+  );
+
+  const hoveredItem = useMemo(
+    () => items.find((i) => i.slug === hoveredSlug) ?? null,
+    [items, hoveredSlug],
+  );
+
+  const sectionConfig = getSectionConfig(section);
+
+  const labelRefs = useRef<ProjectedLabelMap>({});
+  const lastFocusedTriggerRef = useRef<HTMLElement | null>(null);
+
+  const navRef = useRef<HTMLElement>(null);
+  const navBtnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const appRef = useRef<HTMLDivElement>(null);
+  const [pillStyle, setPillStyle] = useState<{
+    leftPct: number;
+    widthPct: number;
+  }>({
+    leftPct: 0,
+    widthPct: 0,
+  });
+
+  const dockScrollRef = useRef<HTMLUListElement>(null);
+  const [dockScroll, setDockScroll] = useState({ left: false, right: false });
+
+  const measureNavPill = useCallback(() => {
+    const btn = navBtnRefs.current[section];
+    const nav = navRef.current;
+    if (!btn || !nav) return;
+    const navRect = nav.getBoundingClientRect();
+    const buttonRect = btn.getBoundingClientRect();
+    if (navRect.width <= 0) return;
+    const nextLeftPct =
+      ((buttonRect.left - navRect.left) / navRect.width) * 100;
+    const nextWidthPct = (buttonRect.width / navRect.width) * 100;
+    setPillStyle((prev) =>
+      Math.abs(prev.leftPct - nextLeftPct) < 0.000001 &&
+      Math.abs(prev.widthPct - nextWidthPct) < 0.000001
+        ? prev
+        : { leftPct: nextLeftPct, widthPct: nextWidthPct },
+    );
+  }, [section]);
+
+  const measureDockOverflow = useCallback(() => {
+    const el = dockScrollRef.current;
+    if (!el) return;
+    setDockScroll({
+      left: el.scrollLeft > 6,
+      right: el.scrollLeft + el.clientWidth < el.scrollWidth - 6,
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    measureNavPill();
+    measureDockOverflow();
+  }, [measureNavPill, measureDockOverflow, isMobile, items.length, hasEntered]);
+
+  useEffect(() => {
+    let resizeTimer: number | null = null;
+    const markResizing = () => {
+      const root = appRef.current;
+      if (root) root.classList.add("is-resizing");
+      if (resizeTimer !== null) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        appRef.current?.classList.remove("is-resizing");
+        resizeTimer = null;
+      }, 140);
+    };
+    const onResize = () => {
+      markResizing();
+      measureNavPill();
+      measureDockOverflow();
+    };
+    window.addEventListener("resize", onResize);
+    document.fonts?.addEventListener("loadingdone", onResize);
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => {
+        measureNavPill();
+        measureDockOverflow();
+      });
+      if (navRef.current) ro.observe(navRef.current);
+      const activeButton = navBtnRefs.current[section];
+      if (activeButton) ro.observe(activeButton);
+      if (dockScrollRef.current) ro.observe(dockScrollRef.current);
+    }
+    return () => {
+      window.removeEventListener("resize", onResize);
+      document.fonts?.removeEventListener("loadingdone", onResize);
+      if (resizeTimer !== null) window.clearTimeout(resizeTimer);
+      appRef.current?.classList.remove("is-resizing");
+      ro?.disconnect();
+    };
+  }, [measureNavPill, measureDockOverflow, section]);
+
+  useEffect(() => {
+    if (dockScrollRef.current) {
+      dockScrollRef.current.scrollLeft = 0;
+    }
+    measureDockOverflow();
+  }, [section, measureDockOverflow]);
+
+  useEffect(() => {
+    if (!selected || !dockScrollRef.current) return;
+    const btn = dockScrollRef.current.querySelector<HTMLButtonElement>(
+      `button[data-dock-item="${selected.slug}"]`,
+    );
+    btn?.scrollIntoView?.({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [selected?.slug]);
+
+  useEffect(() => {
+    const unsub = soundEngine.subscribe(setAudioState);
+    if (!showBootOverlay) {
+      soundEngine.startExperience(!isMobile);
+    }
+
+    const unlock = (ev: Event) => {
+      if (showBootOverlay) return;
+      if (
+        ev.target instanceof Element &&
+        ev.target.closest(".spatial-audio-controls")
+      ) {
+        return;
+      }
+      const clickedInteractiveSfx =
+        ev.target instanceof Element &&
+        Boolean(
+          ev.target.closest(
+            ".spatial-nav, .spatial-pill, .spatial-dock__item",
+          ),
+        );
+      soundEngine.unlock(!isMobile && !clickedInteractiveSfx);
+    };
+    window.addEventListener("pointerdown", unlock, {
+      capture: true,
+      passive: true,
+    });
+    window.addEventListener("keydown", unlock, { capture: true });
+    return () => {
+      unsub();
+      window.removeEventListener("pointerdown", unlock, { capture: true });
+      window.removeEventListener("keydown", unlock, { capture: true });
+    };
+  }, [isMobile, showBootOverlay]);
+
+  useEffect(() => {
+    if (!showBootOverlay) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handleEnterStudio();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showBootOverlay, handleEnterStudio]);
+
+  useEffect(() => {
+    soundEngine.setTheaterActive(resumeOpen);
+    return () => soundEngine.setTheaterActive(false);
+  }, [resumeOpen]);
+
+  const updateParams = useCallback(
+    (values: Record<string, string | null>, replace = false) => {
+      const next = new URLSearchParams(params);
+      next.delete("project");
+      Object.entries(values).forEach(([k, v]) => {
+        if (v) next.set(k, v);
+        else next.delete(k);
+      });
+      setParams(next, { replace });
+    },
+    [params, setParams],
+  );
+
+  useEffect(() => {
+    if (!location.hash) return;
+    const hash = location.hash.slice(1);
+    if (hash.startsWith("projects/")) {
+      updateParams(
+        { section: "projects", item: hash.split("/")[1] ?? null },
+        true,
+      );
+    } else if (hash.startsWith("experience/")) {
+      updateParams({ section: null, item: hash.split("/")[1] ?? null }, true);
+    } else if (hash === "about") {
+      updateParams({ section: "about", item: "jake" }, true);
+    } else if (hash === "contact") {
+      updateParams({ section: "about", item: "contact" }, true);
+    }
+  }, [location.hash, updateParams]);
+
+  useEffect(() => {
+    document.title = selected
+      ? `${selected.title} — Jake Brulato`
+      : section === "experience"
+        ? "Jake Brulato"
+        : `${sectionConfig.label} — Jake Brulato`;
+  }, [selected, section, sectionConfig.label]);
+
+  const handleSectionChange = useCallback(
+    (nextSection: SectionId) => {
+      if (nextSection === section && !selected) return;
+      const idx = SECTIONS.findIndex((s) => s.id === nextSection);
+      soundEngine.playSectionTransition(idx);
+      setHoveredSlug(null);
+      updateParams({
+        section: nextSection === "experience" ? null : nextSection,
+        item: null,
+      });
+    },
+    [section, selected, updateParams],
+  );
+
+  const handleOpenContact = useCallback(() => {
+    if (section === "about" && selected?.slug === "contact") return;
+    if (section !== "about") {
+      const aboutIdx = SECTIONS.findIndex((s) => s.id === "about");
+      soundEngine.playSectionTransition(aboutIdx);
+    } else {
+      soundEngine.playSelect(1);
+    }
+    setHoveredSlug(null);
+    setResumeOpen(false);
+    updateParams({
+      section: "about",
+      item: "contact",
+    });
+  }, [section, selected?.slug, updateParams]);
+
+  const handleOpenResume = useCallback(() => {
+    soundEngine.playOpenTheater();
+    setHoveredSlug(null);
+    setResumeOpen(true);
+  }, []);
+
+  const handleCloseResume = useCallback(() => {
+    soundEngine.playClose();
+    setResumeOpen(false);
+  }, []);
+
+  const handleNavigateTarget = useCallback(
+    (target: SkillEvidenceLink["target"]) => {
+      const nextSection: SectionId =
+        target.kind === "experience"
+          ? "experience"
+          : target.kind === "education"
+            ? "education"
+            : "projects";
+      const idx = SECTIONS.findIndex((s) => s.id === nextSection);
+      soundEngine.playSectionTransition(Math.max(0, idx));
+      setHoveredSlug(null);
+      setResumeOpen(false);
+      updateParams({
+        section: nextSection === "experience" ? null : nextSection,
+        item: target.slug,
+      });
+    },
+    [updateParams],
+  );
+
+  const handleSelect = useCallback(
+    (slug: string) => {
+      if (document.activeElement instanceof HTMLElement) {
+        lastFocusedTriggerRef.current = document.activeElement;
+      }
+      const idx = items.findIndex((i) => i.slug === slug);
+      soundEngine.playSelect(Math.max(0, idx));
+      setHoveredSlug(null);
+      updateParams({
+        section: section === "experience" ? null : section,
+        item: slug,
+      });
+    },
+    [items, section, updateParams],
+  );
+
+  const handleHover = useCallback(
+    (slug: string | null) => {
+      setHoveredSlug((prev) => {
+        if (slug && slug !== prev) {
+          const idx = items.findIndex((i) => i.slug === slug);
+          soundEngine.playHover(Math.max(0, idx));
+        }
+        return slug;
+      });
+    },
+    [items],
+  );
+
+  const handleClose = useCallback(() => {
+    soundEngine.playClose();
+    updateParams({
+      section: section === "experience" ? null : section,
+      item: null,
+    });
+    window.setTimeout(() => {
+      lastFocusedTriggerRef.current?.focus({ preventScroll: true });
+    }, 30);
+  }, [section, updateParams]);
+
+  const handleStep = useCallback(
+    (direction: -1 | 1) => {
+      if (!selected || items.length === 0) return;
+      const curr = items.findIndex((i) => i.slug === selected.slug);
+      const next = items[(curr + direction + items.length) % items.length];
+      if (next) handleSelect(next.slug);
+    },
+    [items, selected, handleSelect],
+  );
+
+  // Staged Escape + Arrow stepping + `P` keyboard shortcut to cycle color palettes on demand!
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const active = document.activeElement as HTMLElement | null;
+      const isEditable =
+        active?.tagName === "INPUT" ||
+        active?.tagName === "TEXTAREA" ||
+        active?.tagName === "SELECT" ||
+        active?.isContentEditable;
+
+      if (
+        !isEditable &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        (e.key === "p" || e.key === "P")
+      ) {
+        e.preventDefault();
+        const { index } = cycleTheme();
+        soundEngine.playPaletteShift(index);
+        return;
+      }
+
+      if (e.key === "Escape") {
+        if (resumeOpen) {
+          handleCloseResume();
+        } else if (selected) {
+          handleClose();
+        }
+        return;
+      }
+
+      if (selected && !resumeOpen && !isEditable) {
+        if (e.key === "ArrowRight") handleStep(1);
+        else if (e.key === "ArrowLeft") handleStep(-1);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selected, resumeOpen, handleClose, handleCloseResume, handleStep, cycleTheme]);
+
+  if (isMobile) {
+    return (
+      <MobilePortfolio
+        section={section}
+        items={items}
+        selected={selected}
+        resumeOpen={resumeOpen}
+        theme={theme}
+        onSelectTheme={setTheme}
+        onSectionChange={handleSectionChange}
+        onSelect={handleSelect}
+        onClose={handleClose}
+        onStep={handleStep}
+        onOpenContact={handleOpenContact}
+        onOpenResume={handleOpenResume}
+        onCloseResume={handleCloseResume}
+        onNavigateTarget={handleNavigateTarget}
+      />
+    );
+  }
+
+  const transitionKey = showBootOverlay
+    ? "boot-hold"
+    : `${section}:${selected?.slug ?? "overview"}`;
+  const selectedIndex = selected
+    ? items.findIndex((i) => i.slug === selected.slug)
+    : -1;
+
+  const dynamicEyebrow =
+    section === "projects"
+      ? `${sectionConfig.eyebrowBase} · ${String(items.length).padStart(2, "0")} PROJECTS`
+      : section === "education"
+        ? `${sectionConfig.eyebrowBase} · ${String(items.length).padStart(2, "0")} DEGREES`
+        : section === "skills"
+          ? `${sectionConfig.eyebrowBase} · ${String(items.length).padStart(2, "0")} CLUSTERS`
+          : sectionConfig.eyebrowBase;
+
+  return (
+    <div
+      ref={appRef}
+      className={`spatial-app section-${section} ${selected ? "has-selection" : ""} ${resumeOpen ? "is-theater" : ""} ${showBootOverlay ? "is-boot-holding" : ""} ${bootRevealing ? "is-boot-revealing" : ""} ${isCompactHeader ? "is-compact-header" : ""} ${isCompactAudio ? "is-compact-audio" : ""}`}
+    >
+      <a className="spatial-skip" href="#explorer-content">
+        Skip to content
+      </a>
+
+      {/* Dynamic aurora atmosphere + ultra-fine film grain */}
+      <div className="spatial-atmosphere" aria-hidden="true">
+        <div className="spatial-orb spatial-orb--a" />
+        <div className="spatial-orb spatial-orb--b" />
+        <div className="spatial-orb spatial-orb--c" />
+      </div>
+
+      {/* Full-viewport shared living 120-cube choreography canvas */}
+      <div className="spatial-canvas-layer">
+        <SpatialStage
+          items={items}
+          section={section}
+          selected={selected}
+          hoveredSlug={hoveredSlug}
+          transitionKey={transitionKey}
+          theme={theme}
+          bootHolding={showBootOverlay}
+          bootHovering={bootHovering}
+          suspended={resumeOpen}
+          labelRefs={labelRefs}
+          onSelect={handleSelect}
+          onHover={handleHover}
+          onBootEnter={handleEnterStudio}
+          onBootHover={setBootHovering}
+        />
+      </div>
+
+      {/* 2D-projected 3D floating frosted glass pills */}
+      {!selected && !showBootOverlay && !resumeOpen && (
+        <div className="spatial-labels-layer" aria-hidden="false">
+          {items.map((item) => {
+            const isHovered = hoveredSlug === item.slug;
+            return (
+              <button
+                key={item.uid}
+                ref={(el) => {
+                  labelRefs.current[item.uid] = el;
+                }}
+                type="button"
+                tabIndex={-1}
+                data-spatial-item={item.slug}
+                className={`spatial-pill ${isHovered ? "is-hovered" : ""}`}
+                onMouseEnter={() => handleHover(item.slug)}
+                onMouseLeave={() => handleHover(null)}
+                onClick={() => handleSelect(item.slug)}
+              >
+                <span
+                  className="spatial-pill__dot"
+                  style={{ backgroundColor: item.palette.primary }}
+                  aria-hidden="true"
+                />
+                <span className="spatial-pill__label">{item.shortLabel}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Floating-cube intro with "Enter" + subtle palette dots right underneath! */}
+      {(showBootOverlay || bootExiting) && (
+        <div
+          className={`spatial-boot-overlay ${bootExiting ? "is-exiting" : ""}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enter Jake Brulato's spatial portfolio"
+        >
+          <button
+            type="button"
+            id="boot-enter-button"
+            className="spatial-boot-enter-btn"
+            onMouseEnter={() => setBootHovering(true)}
+            onMouseLeave={() => setBootHovering(false)}
+            onFocus={() => setBootHovering(true)}
+            onBlur={() => setBootHovering(false)}
+            onClick={handleEnterStudio}
+          >
+            Enter
+          </button>
+
+          <div
+            className="spatial-boot-palettes"
+            role="group"
+            aria-label="Choose color palette"
+          >
+            {themes.map((candidate, idx) => (
+              <button
+                key={candidate.id}
+                type="button"
+                className={`spatial-boot-swatch ${candidate.id === theme.id ? "is-active" : ""}`}
+                aria-label={`${candidate.label} color palette`}
+                aria-pressed={candidate.id === theme.id}
+                title={candidate.label}
+                onClick={() => {
+                  soundEngine.playPaletteShift(idx);
+                  setTheme(candidate.id);
+                }}
+              >
+                <span
+                  style={{
+                    background: `linear-gradient(135deg, ${candidate.swatches[1]} 0%, ${candidate.swatches[0]} 55%, ${candidate.swatches[2]} 100%)`,
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Floating Apple Liquid Glass top bar */}
+      <header
+        className="spatial-header"
+        aria-hidden={resumeOpen || showBootOverlay || undefined}
+        inert={resumeOpen || showBootOverlay}
+      >
+        <Link
+          to="/"
+          className="spatial-brand"
+          onClick={(e) => {
+            e.preventDefault();
+            handleSectionChange("experience");
+          }}
+        >
+          <span className="spatial-brand__mark" aria-hidden="true">
+            <BrandMark size={34} />
+          </span>
+          <span className="spatial-brand__text">
+            <strong>Jake Brulato</strong>
+            <small>Data Management Analyst</small>
+          </span>
+        </Link>
+
+        <nav
+          ref={navRef}
+          className="spatial-nav"
+          aria-label="Portfolio sections"
+        >
+          <span
+            className="spatial-nav__indicator"
+            style={{
+              left: `${pillStyle.leftPct}%`,
+              width: `${pillStyle.widthPct}%`,
+              opacity: pillStyle.widthPct > 0 ? 1 : 0,
+            }}
+            aria-hidden="true"
+          />
+          {SECTIONS.map((s) => (
+            <button
+              key={s.id}
+              ref={(el) => {
+                navBtnRefs.current[s.id] = el;
+              }}
+              type="button"
+              aria-current={section === s.id ? "page" : undefined}
+              onClick={() => handleSectionChange(s.id)}
+            >
+              {s.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="spatial-header__right">
+          <button
+            type="button"
+            className="spatial-header__link"
+            onClick={handleOpenResume}
+          >
+            Résumé
+          </button>
+          <button
+            type="button"
+            className="spatial-header__cta"
+            onClick={handleOpenContact}
+          >
+            Get in touch
+          </button>
+        </div>
+      </header>
+
+      {/* Foreground HUD */}
+      <main
+        id="explorer-content"
+        className="spatial-hud"
+        aria-hidden={showBootOverlay || undefined}
+        inert={showBootOverlay}
+      >
+        <section
+          key={section}
+          className={`spatial-hero ${selected || resumeOpen ? "is-retracted" : ""}`}
+          aria-hidden={Boolean(selected || resumeOpen)}
+          aria-live="polite"
+        >
+          <p className="spatial-hero__eyebrow">{dynamicEyebrow}</p>
+          <h1 className="spatial-hero__title">
+            {sectionConfig.headlineTop}
+            <br />
+            <em>{sectionConfig.headlineAccent}</em>
+          </h1>
+
+          <p className="spatial-hero__desc">
+            {hoveredItem
+              ? (hoveredItem.hoverDescription ?? hoveredItem.subtitle)
+              : sectionConfig.description}
+          </p>
+        </section>
+
+        {!showBootOverlay && selected && !resumeOpen && (
+          <div className="spatial-focus-badge">
+            <button
+              type="button"
+              className="spatial-back-pill"
+              onClick={handleClose}
+            >
+              ← All {sectionConfig.label.toLowerCase()}
+            </button>
+            <div className="spatial-focus-caption">
+              <span>{selected.eyebrow}</span>
+              <strong>{selected.title}</strong>
+            </div>
+          </div>
+        )}
+
+        {/* Full-viewport Liquid Glass Résumé Theater */}
+        {!showBootOverlay && resumeOpen && (
+          <div className="spatial-sheet-slot">
+            <aside className="glass-sheet is-theater" aria-label="Résumé viewer">
+              <div className="theater-slim-bar">
+                <div className="theater-slim-bar__left">
+                  <button
+                    type="button"
+                    className="glass-sheet__pill-btn"
+                    onClick={handleCloseResume}
+                  >
+                    {selected
+                      ? "← Return to sculpture"
+                      : `← Return to ${sectionConfig.label.toLowerCase()}`}
+                  </button>
+                  <strong className="theater-slim-bar__title">
+                    Jake Brulato — Résumé
+                  </strong>
+                </div>
+                <div className="theater-slim-bar__right">
+                  <a
+                    className="theater-slim-bar__link"
+                    href="/files/resume.pdf"
+                    download="Jake_Brulato_Resume.pdf"
+                  >
+                    Download PDF <span aria-hidden="true">↓</span>
+                  </a>
+                  <a
+                    className="theater-slim-bar__link"
+                    href="/files/resume.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open full page <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
+              </div>
+              <div className="theater-iframe-stage theater-iframe-stage--pdf">
+                <iframe
+                  src="/files/resume.pdf#view=FitH"
+                  title="Jake Brulato résumé PDF"
+                />
+              </div>
+            </aside>
+          </div>
+        )}
+
+        {/* Sliding Apple Liquid Glass Detail Sheet */}
+        {!showBootOverlay && !resumeOpen && selected && (
+          <div className="spatial-sheet-slot">
+            <DetailSheet
+              item={selected}
+              index={Math.max(0, selectedIndex)}
+              total={items.length}
+              onClose={handleClose}
+              onStep={handleStep}
+              onOpenResume={handleOpenResume}
+              onNavigateTarget={handleNavigateTarget}
+            />
+          </div>
+        )}
+
+        {/* Bottom-left Liquid Glass Music, Sound (SFX) & On-Demand Color Palette controls */}
+        {!resumeOpen && (
+          <div
+            className="spatial-audio-controls"
+            role="group"
+            aria-label="Audio and color palette controls"
+          >
+            <button
+              type="button"
+              data-audio-control="music"
+              className={`spatial-audio-btn ${audioState.musicMuted ? "is-muted" : audioState.running ? "is-playing" : "is-ready"}`}
+              aria-pressed={audioState.musicMuted}
+              aria-label={audioState.musicMuted ? "Unmute music" : "Mute music"}
+              title={
+                audioState.musicMuted
+                  ? "Unmute ambient music"
+                  : "Mute ambient music"
+              }
+              onClick={() => soundEngine.toggleMusicMute()}
+            >
+              <span className="spatial-audio-btn__icon" aria-hidden="true">
+                {audioState.musicMuted ? (
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                    <line x1="2" y1="2" x2="22" y2="22" />
+                  </svg>
+                ) : (
+                  <span className="spatial-audio-bars">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                )}
+              </span>
+              <span className="spatial-audio-btn__label">Music</span>
+            </button>
+
+            <span className="spatial-audio-divider" aria-hidden="true" />
+
+            <button
+              type="button"
+              data-audio-control="sfx"
+              className={`spatial-audio-btn ${audioState.sfxMuted ? "is-muted" : audioState.running ? "is-playing" : "is-ready"}`}
+              aria-pressed={audioState.sfxMuted}
+              aria-label={
+                audioState.sfxMuted
+                  ? "Unmute sound effects"
+                  : "Mute sound effects"
+              }
+              title={
+                audioState.sfxMuted
+                  ? "Unmute interface sound effects"
+                  : "Mute interface sound effects"
+              }
+              onClick={() => soundEngine.toggleSfxMute()}
+            >
+              <span className="spatial-audio-btn__icon" aria-hidden="true">
+                {audioState.sfxMuted ? (
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <line x1="22" y1="9" x2="16" y2="15" />
+                    <line x1="16" y1="9" x2="22" y2="15" />
+                  </svg>
+                ) : (
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                  </svg>
+                )}
+              </span>
+              <span className="spatial-audio-btn__label">Sound</span>
+            </button>
+
+            <span className="spatial-audio-divider" aria-hidden="true" />
+
+            <PalettePickerControl
+              theme={theme}
+              onSelectTheme={setTheme}
+              compact={isCompactAudio}
+            />
+          </div>
+        )}
+
+        {/* Floating Liquid Glass Bottom Dock */}
+        {!resumeOpen && (
+          <div className="spatial-dock-wrap">
+            <div
+              className={`spatial-dock-shell ${dockScroll.left ? "can-left" : ""} ${dockScroll.right ? "can-right" : ""}`}
+            >
+              {dockScroll.left && (
+                <button
+                  type="button"
+                  className="spatial-dock__chevron spatial-dock__chevron--left"
+                  aria-label="Scroll items left"
+                  onClick={() =>
+                    dockScrollRef.current?.scrollBy({
+                      left: -260,
+                      behavior: "smooth",
+                    })
+                  }
+                >
+                  ‹
+                </button>
+              )}
+              <ul
+                ref={dockScrollRef}
+                className="spatial-dock"
+                aria-label={`${sectionConfig.label} items`}
+                onScroll={measureDockOverflow}
+                onWheel={(e) => {
+                  if (
+                    Math.abs(e.deltaY) > Math.abs(e.deltaX) &&
+                    dockScrollRef.current
+                  ) {
+                    dockScrollRef.current.scrollLeft += e.deltaY;
+                  }
+                }}
+              >
+                {items.map((item) => {
+                  const isSelected = selected?.slug === item.slug;
+                  const isHovered = hoveredSlug === item.slug;
+                  return (
+                    <li key={item.uid}>
+                      <button
+                        type="button"
+                        data-dock-item={item.slug}
+                        className={`spatial-dock__item ${isSelected ? "is-selected" : ""} ${isHovered ? "is-hovered" : ""}`}
+                        aria-pressed={isSelected}
+                        onMouseEnter={() => handleHover(item.slug)}
+                        onMouseLeave={() => handleHover(null)}
+                        onFocus={() => handleHover(item.slug)}
+                        onBlur={() => handleHover(null)}
+                        onClick={() => handleSelect(item.slug)}
+                      >
+                        <span
+                          className="spatial-dock__dot"
+                          style={{ backgroundColor: item.palette.primary }}
+                          aria-hidden="true"
+                        />
+                        <span>{item.shortLabel}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              {dockScroll.right && (
+                <button
+                  type="button"
+                  className="spatial-dock__chevron spatial-dock__chevron--right"
+                  aria-label="Scroll items right"
+                  onClick={() =>
+                    dockScrollRef.current?.scrollBy({
+                      left: 260,
+                      behavior: "smooth",
+                    })
+                  }
+                >
+                  ›
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
